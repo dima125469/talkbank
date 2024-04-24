@@ -1,0 +1,75 @@
+<?php
+function calculateMaxEarnings($m1, $p1, $m2, $p2, $maxM) {
+    $maxProfit = 0;
+    $bestX1 = 0;
+    $bestX2 = 0;
+    $totalProjects = 0;
+    $maxOneEachType = 0;
+
+    if ($m1 == 0 && $m2 == 0) {
+        return array('maxProfit' => 0, 'projectsType1' => 0, 'projectsType2' => 0, 'totalProjects' => 0, 'maxOneEachType' => 0);
+    }
+
+    for ($x1 = 0; $m1 == 0 ? $x1 == 0 : $x1 * $m1 <= $maxM; $x1++) {
+        for ($x2 = 0; $m2 == 0 ? $x2 == 0 : ($x1 * $m1 + $x2 * $m2) <= $maxM; $x2++) {
+            $currentProfit = $x1 * $p1 + $x2 * $p2;
+            if ($currentProfit > $maxProfit) {
+                $maxProfit = $currentProfit;
+                $bestX1 = $x1;
+                $bestX2 = $x2;
+            }
+        }
+    }
+
+    $totalProjects = $bestX1 + $bestX2;
+
+    if ($m1 + $m2 <= $maxM) {
+        $maxOneEachType = $p1 + $p2;
+    }
+
+    return array('maxProfit' => $maxProfit, 'projectsType1' => $bestX1, 'projectsType2' => $bestX2, 'totalProjects' => $totalProjects, 'maxOneEachType' => $maxOneEachType);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $m1 = isset($_POST['m1']) ? (int)$_POST['m1'] : 0;
+    $p1 = isset($_POST['p1']) ? (int)$_POST['p1'] : 0;
+    $m2 = isset($_POST['m2']) ? (int)$_POST['m2'] : 0;
+    $p2 = isset($_POST['p2']) ? (int)$_POST['p2'] : 0;
+    $maxM = isset($_POST['maxM']) ? (int)$_POST['maxM'] : 0;
+
+    $result = calculateMaxEarnings($m1, $p1, $m2, $p2, $maxM);
+    echo "Всего проектов за месяц: " . $result['totalProjects'] . "<br>";
+echo "Макс. прибыль с одного проекта каждого типа: " . $result['maxOneEachType'] . " руб<br>";
+echo "Макс. прибыль, если сколько угодно проектов : " . $result['maxProfit'] . " руб.<br>";
+}
+?>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Freelance PHP Calculator</title>
+    <style>
+input[type="number"] {
+    width: 100%;
+    padding: 10px; 
+    margin-bottom: 10px; 
+    box-sizing: border-box; 
+}
+
+form {
+    max-width: 600px; 
+    margin: auto; 
+}
+</style>
+</head>
+<body>
+<form method="post">
+    <input type="number" name="m1" placeholder="Введите часы для сайтов" required><br>
+    <input type="number" name="p1" placeholder="Введите стоимость сайтов" required><br>
+    <input type="number" name="m2" placeholder="Введите часы для алгоритмов" required><br>
+    <input type="number" name="p2" placeholder="Введите стоимость алгоритмов" required><br>
+    <input type="number" name="maxM" placeholder="Введите макс. часы в месяц" required><br>
+    <input type="submit" value="Рассчитать">
+</form>
+</body>
+</html>
